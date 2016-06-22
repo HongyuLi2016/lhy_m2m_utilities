@@ -243,7 +243,7 @@ class create_ics:
 
       fig=plt.figure()
       ax=fig.add_subplot(1,1,1)
-      ax.hist(energy,bins=300)
+      ax.hist(Renergy,bins=300)
       ax.set_xlabel('Renergy')
       ax.set_ylabel('Number of particles')
       fig.savefig('%s/%s/elzRenergy.png'%(self.folder, self.particle_folder))
@@ -257,10 +257,12 @@ class create_ics:
 
       fig=plt.figure()
       ax=fig.add_subplot(1,1,1)
-      ax.hist(cvalue,bins=300)
-      ax.set_xlabel('cvalue')
+      ax.hist(z,bins=300)
+      ax.set_xlabel('z')
       ax.set_ylabel('Number of particles')
-      fig.savefig('%s/%s/elzCvalue.png'%(self.folder, self.particle_folder))
+      fig.savefig('%s/%s/elzZ.png'%(self.folder, self.particle_folder))
+
+      
 
     self.lz=lz
     self.energy=energy
@@ -280,8 +282,18 @@ class create_ics:
       for i in range(len(weight)):
         print >> ff, '%+e %+e %+e %+e %+e %+e %+e'%(xx[i,0],xx[i,1],xx[i,2],vv[i,0],vv[i,1],vv[i,2],weight[i])  
     
+    pot_energy = self.Phi(xx)
+    kin_energy = 0.5 * (vv[:,0]**2 + vv[:,1]**2 + vv[:,2]**2)
+    particle_energy = pot_energy + kin_energy
+    relative_error = np.abs((particle_energy - self.energy) / self.energy )
+    bad_energy = relative_error > 1e-6
+    r2 = xx[:,0]**2 + xx[:,1]**2 +xx[:,2]**2
+    bad_position = r2 > self.size**2
+    print 'number of bad energy: %d'%(bad_energy.sum())
+    print 'number of bad position: %d'%(bad_position.sum())
     print 'Total time for creating ICS: %.1f'%(time()-self.start_time)
-    np.save('particles.npy',[xx,vv,self,lz,self.energy,self.Renergy,self.R,self.z])
+    np.save('%s/%s/particles.npy'%(self.folder, self.particle_folder),[xx,vv])
+    np.save('%s/%s/others.npy'%(self.folder, self.particle_folder),[self.lz,self.energy,self.Renergy,self.R,self.z])
 
 if __name__=='__main__':
   parser = OptionParser()
