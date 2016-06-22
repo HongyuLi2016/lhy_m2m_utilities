@@ -227,15 +227,49 @@ class create_ics:
       ax.set_ylabel('z')
       fig.savefig('%s/%s/elzRz.png'%(self.folder, self.particle_folder))      
 
+      fig=plt.figure()
+      ax=fig.add_subplot(1,1,1)
+      ax.hist(energy,bins=300)
+      ax.set_xlabel('energy')
+      ax.set_ylabel('Number of particles')
+      fig.savefig('%s/%s/elzEnergy.png'%(self.folder, self.particle_folder))
+
+      fig=plt.figure()
+      ax=fig.add_subplot(1,1,1)
+      ax.hist(lz,bins=300)
+      ax.set_xlabel('Lz')
+      ax.set_ylabel('Number of particles')
+      fig.savefig('%s/%s/elzLz.png'%(self.folder, self.particle_folder))
+
+      fig=plt.figure()
+      ax=fig.add_subplot(1,1,1)
+      ax.hist(energy,bins=300)
+      ax.set_xlabel('Renergy')
+      ax.set_ylabel('Number of particles')
+      fig.savefig('%s/%s/elzRenergy.png'%(self.folder, self.particle_folder))
+
+      fig=plt.figure()
+      ax=fig.add_subplot(1,1,1)
+      ax.hist(R,bins=300)
+      ax.set_xlabel('R')
+      ax.set_ylabel('Number of particles')
+      fig.savefig('%s/%s/elzR.png'%(self.folder, self.particle_folder))
+
+      fig=plt.figure()
+      ax=fig.add_subplot(1,1,1)
+      ax.hist(cvalue,bins=300)
+      ax.set_xlabel('cvalue')
+      ax.set_ylabel('Number of particles')
+      fig.savefig('%s/%s/elzCvalue.png'%(self.folder, self.particle_folder))
+
+    self.lz=lz
+    self.energy=energy
+    self.Renergy=Renergy
+    self.R=R
+    self.z=z
+
     return xx, vv
-    #plt.hist(energy,bins=100)
-    #plt.hist(cvalue,bins=100)
-    #plt.hist(Renergy,bins=100)
-    #plt.hist(lz,bins=100)
-    #plt.plot(energy,lz,'.')
-    #print R,z
-    #plt.plot(R,z,'.')
-    #plt.show()
+
 
   def output_ics_file(self, xx, vv, weight, fname = 'coordinates'):
     if len(weight) != self.num_particles:
@@ -247,7 +281,7 @@ class create_ics:
         print >> ff, '%+e %+e %+e %+e %+e %+e %+e'%(xx[i,0],xx[i,1],xx[i,2],vv[i,0],vv[i,1],vv[i,2],weight[i])  
     
     print 'Total time for creating ICS: %.1f'%(time()-self.start_time)
-    
+    np.save('particles.npy',[xx,vv,self,lz,self.energy,self.Renergy,self.R,self.z])
 
 if __name__=='__main__':
   parser = OptionParser()
