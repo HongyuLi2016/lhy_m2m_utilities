@@ -14,16 +14,17 @@ import util_runtime as rt
 from scipy.stats import uniform
 from scipy.optimize import minimize,brentq
 from time import time,localtime,strftime
-
+import cProfile
+import pstats
 date=strftime('%Y-%m-%d %X',localtime())
 
 #check if the R vaule inside the energy lz sruface
 def inside_zvc(R, z, energy, lz, Phi=None):
-  return energy >= Phi([R, 0.0, z]) + 0.5 * lz * lz / (R * R)
+  return energy >= Phi(R, 0.0, z) + 0.5 * lz * lz / (R * R)
 
 #the function return the angular momentum given energy and R
 def max_lz_fn(R,energy,Phi=None):
-  patr = Phi( [ R, 0.0 , 0.0 ] )[0]
+  patr = Phi(  R, 0.0 , 0.0  )
   if patr > energy:
     return 0.0
   else:
@@ -31,19 +32,18 @@ def max_lz_fn(R,energy,Phi=None):
 
 #find out the maximum lz given R and energy
 def find_max_lz(energy, Renergy, Phi=None):
-  res = minimize(max_lz_fn, 0.5*Renergy, method = 'SLSQP', bounds = [[0.0, Renergy]], args=(energy,Phi) )
+  res = minimize(max_lz_fn, 0.5*Renergy, method = 'SLSQP', bounds = [[0.0, Renergy]], args=(energy,Phi) ,options={'maxiter':50})
   if not res.success:
     print 'Warning - minimize in find max lz failed for (energy, Renergy) = (%.4f, %.4f)'%(energy, Renergy)
   return -res.fun[0], res.x[0]
 
 #the function used to find out the z value for a given lz, energy and R
 def zvc_fn(z, energy, lz, R, Phi=None):    
-  return Phi([R , 0.0, z]) + 0.5 * lz * lz /  (R * R) - energy
+  return Phi(R , 0.0, z) + 0.5 * lz * lz /  (R * R) - energy
    
 #the function used to find out the z value for a given lz, energy and R
 def find_zvc_z(energy, lz, R, Phi=None, size = None):
-  res = brentq(zvc_fn, 0.0, size, args=(energy, lz, R, Phi))
-  #print res
+  res = brentq(zvc_fn, 0.0, size, args=(energy, lz, R, Phi), xtol=1e-8, rtol=1e-8, maxiter=50)
   return res
 
 class create_ics:
@@ -127,14 +127,31 @@ class create_ics:
       rst[i]=self.mge.phi(x[i,0],x[i,1],x[i,2])
     return rst
 
+  def random_table(self,index): 
+    tablesize=self.num_particles
+    if self.initialize:
+      #print 'initialize'      
+      self.rtable=np.zeros([tablesize,3])
+      self.rtable[:,0]=10**uniform.rvs(loc=self.boundary[0,0],scale=self.boundary[0,1],size=tablesize)
+      self.rtable[:,1]=-10**uniform.rvs(loc=self.boundary[1,0],scale=self.boundary[1,1], size = tablesize)
+      self.rtable[:,2]=uniform.rvs(loc=self.boundary[2,0],scale=self.boundary[2,1], size = tablesize )
+      self.table_index=np.array([0,0,0],dtype=int)
+      self.initialize = False
+    rst = self.rtable[self.table_index[index],index]
+    self.table_index[index]+=1
+    if (self.table_index > tablesize - 5).sum()>0:
+      self.initialize=True
+    return rst
+
+
   def Elz(self,use_logz=True,LOGB=100,NCIRC=100,cvalue_limit=-1.0,num_particles=None,\
           plot=True):
     if num_particles is None:
       num_particles = self.num_particles
     origin=np.asarray([0.0,0.0,0.0]) 
     limit=np.asarray([self.size,0.0,0.0])
-    energy_limit  = self.Phi(limit)[0]
-    energy_origin = self.Phi(origin)[0]
+    energy_limit  = self.mge.phi(limit[0],limit[1],limit[2])
+    energy_origin = self.mge.phi(origin[0],origin[1],origin[2])
     #print energy_limit,energy_origin
     energy_interval = energy_limit - energy_origin
     energy=np.zeros(num_particles)
@@ -148,25 +165,31 @@ class create_ics:
     circ_limit=1.0
     loc_circ=np.log10(circ_limit/NCIRC)
     scale_circ=np.log10(circ_limit)-np.log10(circ_limit/NCIRC)
+    #initialize random table, index 0: Renergy 1: cvalue 2: R
+    self.boundary=np.array([[loc_logb,scale_logb],[loc_circ,scale_circ],[0.0,self.size]])
+    self.initialize=True
+
     # sample energy and lz
     sign_z=-1.0
     for i in range(num_particles):
       while True:
         # sample energy
         while True:
-          Renergy[i]=10**uniform.rvs(loc=loc_logb,scale=scale_logb,size=1)
+          #Renergy[i]=10**uniform.rvs(loc=loc_logb,scale=scale_logb,size=1)
+          Renergy[i]=self.random_table(0)
           energy_pos=np.array([Renergy[i],0,0])
-          energy[i]=lhy.Phi(energy_pos)[0]
+          energy[i]=self.mge.phi(energy_pos[0],energy_pos[1],energy_pos[2])
           if energy[i]<1.02*energy_limit:
             break
       
         # sample cvalue
         while True:
-          cvalue = -10**uniform.rvs(loc = loc_circ, scale = scale_circ, size = 1)
+          #cvalue = -10**uniform.rvs(loc = loc_circ, scale = scale_circ, size = 1)
+          cvalue = self.random_table(1)
           if cvalue>cvalue_limit:
             break
         # find maximum lz for an energy
-        max_lz, max_lz_radius = find_max_lz(energy[i],Renergy[i],Phi=self.Phi)
+        max_lz, max_lz_radius = find_max_lz(energy[i],Renergy[i],Phi=self.mge.phi)
         
         # sample lz
         #sign_lz=np.random.choice([-1.0,1.0]) #set sign for lz???
@@ -186,12 +209,13 @@ class create_ics:
         stop_R = False
 
         while True:
-          R[i] =  uniform.rvs( loc= 0.0, scale = self.size, size = 1 )
-          stop_R =  inside_zvc(R[i], 0.0, energy[i], lz[i], Phi = self.Phi )
+          #R[i] =  uniform.rvs( loc= 0.0, scale = self.size, size = 1 )
+          R[i] = self.random_table(2)
+          stop_R =  inside_zvc(R[i], 0.0, energy[i], lz[i], Phi = self.mge.phi )
           if stop_R:
             break
 
-        z[i] = sign_z * find_zvc_z(energy[i], lz[i], R[i], Phi = self.Phi, size= self.size)
+        z[i] = sign_z * find_zvc_z(energy[i], lz[i], R[i], Phi = self.mge.phi, size= self.size)
         stop_z = R[i] * R[i] + z[i] * z[i]  < self.size * self.size
         if stop_z:
           break
@@ -295,7 +319,8 @@ class create_ics:
     np.save('%s/%s/particles.npy'%(self.folder, self.particle_folder),[xx,vv])
     np.save('%s/%s/others.npy'%(self.folder, self.particle_folder),[self.lz,self.energy,self.Renergy,self.R,self.z])
 
-if __name__=='__main__':
+
+def main():
   parser = OptionParser()
   parser.add_option('-f', action='store',type='string' ,dest='folder',default=None,help='file list')
   (options, args) = parser.parse_args()
@@ -307,4 +332,8 @@ if __name__=='__main__':
   xx,vv = lhy.Elz()
   lhy.output_ics_file(xx,vv,lhy.weight)
     
-
+if __name__=='__main__':
+  #main()
+  cProfile.run('main()','profile.log')
+  p=pstats.Stats('profile.log')
+  p.sort_stats('time').print_stats(20)
