@@ -128,13 +128,32 @@ class create_ics:
     return rst
 
   def random_table(self,index): 
-    tablesize=self.num_particles
+    tablesize=self.num_particles * 5
     if self.initialize:
+      binsize_radial = tablesize / self.LOGB 
+      binsize_circ = tablesize / self.NCIRC
+      tablesize = binsize_radial * self.LOGB
+      radial_bin = np.zeros(self.LOGB +1)
+      circ_bin = np.zeros(self.NCIRC +1)
+      radial_bin[1:] = (self.size + 1.0)**((np.arange(self.LOGB,dtype=float)+1)/self.LOGB) - 1.0
+      circ_bin[1:] = (self.cvalue_limit + 1.0)**((np.arange(self.NCIRC,dtype=float)+1)/self.LOGB) - 1.0
+      radial_bin[-1] = self.size
+      circ_bin[-1] = self.cvalue_limit
+      Renergy = []
+      cvalue = []
+      R = []
+
+      for i in range(self.LOGB):
+        Renergy.append(uniform.rvs(loc=radial_bin[i],scale=radial_bin[i+1]-radial_bin[i],size=binsize_radial))
+        R.append(uniform.rvs(loc=radial_bin[i],scale=radial_bin[i+1]-radial_bin[i],size=binsize_radial))
+      for i in range(self.NCIRC):
+        cvalue.append(uniform.rvs(loc=circ_bin[i],scale=circ_bin[i+1]-circ_bin[i],size=binsize_circ))      
+
       #print 'initialize'      
       self.rtable=np.zeros([tablesize,3])
-      self.rtable[:,0]=10**uniform.rvs(loc=self.boundary[0,0],scale=self.boundary[0,1],size=tablesize)
-      self.rtable[:,1]=-10**uniform.rvs(loc=self.boundary[1,0],scale=self.boundary[1,1], size = tablesize)
-      self.rtable[:,2]=uniform.rvs(loc=self.boundary[2,0],scale=self.boundary[2,1], size = tablesize )
+      self.rtable[:,0]=np.array(Renergy).ravel()[np.random.permutation(tablesize)]
+      self.rtable[:,1]=-np.array(cvalue).ravel()[np.random.permutation(tablesize)]
+      self.rtable[:,2]=np.array(R).ravel()[np.random.permutation(tablesize)]
       self.table_index=np.array([0,0,0],dtype=int)
       self.initialize = False
     rst = self.rtable[self.table_index[index],index]
@@ -144,10 +163,13 @@ class create_ics:
     return rst
 
 
-  def Elz(self,use_logz=True,LOGB=100,NCIRC=100,cvalue_limit=-1.0,num_particles=None,\
+  def Elz(self,use_logz=True,LOGB=100,NCIRC=100,cvalue_limit=1.0,num_particles=None,\
           plot=True):
     if num_particles is None:
       num_particles = self.num_particles
+    self.LOGB = LOGB
+    self.NCIRC = NCIRC
+    self.cvalue_limit = cvalue_limit
     origin=np.asarray([0.0,0.0,0.0]) 
     limit=np.asarray([self.size,0.0,0.0])
     energy_limit  = self.mge.phi(limit[0],limit[1],limit[2])
@@ -162,7 +184,7 @@ class create_ics:
     #uniform randam boundary for Renergy and cvalue
     loc_logb=np.log10(self.size/LOGB)
     scale_logb=np.log10(self.size)-np.log10(self.size/LOGB)
-    circ_limit=1.0
+    circ_limit=cvalue_limit
     loc_circ=np.log10(circ_limit/NCIRC)
     scale_circ=np.log10(circ_limit)-np.log10(circ_limit/NCIRC)
     #initialize random table, index 0: Renergy 1: cvalue 2: R
@@ -186,7 +208,7 @@ class create_ics:
         while True:
           #cvalue = -10**uniform.rvs(loc = loc_circ, scale = scale_circ, size = 1)
           cvalue = self.random_table(1)
-          if cvalue>cvalue_limit:
+          if cvalue>-cvalue_limit:
             break
         # find maximum lz for an energy
         max_lz, max_lz_radius = find_max_lz(energy[i],Renergy[i],Phi=self.mge.phi)
@@ -196,7 +218,7 @@ class create_ics:
         if use_logz:
           lz[i] = (cvalue + 1.0) * max_lz # Question: why lz only have positive value?
         else:
-          lz[i]=uniform.rvs(loc=-max_lz,scale=2*max_lz,size=num_particles)  
+          lz=uniform.rvs(loc=-max_lz,scale=2*max_lz,size=num_particles)  
         if abs(lz[i])>0.0001 and abs(lz[i])<max_lz-0.0001:
           break
       
@@ -322,7 +344,7 @@ class create_ics:
 
 def main():
   parser = OptionParser()
-  parser.add_option('-f', action='store',type='string' ,dest='folder',default=None,help='file list')
+  parser.add_option('-f', action='store',type='string' ,dest='folder',default=None,help='folder name')
   (options, args) = parser.parse_args()
   if len(args)!=1:
     print 'Error - model name must be provided!'
@@ -333,7 +355,7 @@ def main():
   lhy.output_ics_file(xx,vv,lhy.weight)
     
 if __name__=='__main__':
-  #main()
-  cProfile.run('main()','profile.log')
-  p=pstats.Stats('profile.log')
-  p.sort_stats('time').print_stats(20)
+  main()
+  #cProfile.run('main()','profile.log')
+  #p=pstats.Stats('profile.log')
+  #p.sort_stats('time').print_stats(20)
