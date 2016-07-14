@@ -320,7 +320,7 @@ class create:
     for i in xrange(num_coord1):
       for j in xrange(num_coord2):
         bin_index = i * num_coord2 + j
-        area[bin_index] = 0.5 * (edges_coord2[j+1] - edges_coord2[j]) * (edges_coord1[i+1]**2 - edges_coord1[i]**2)    
+        area[bin_index] = 0.5 * (edges_coord2[j+1] - edges_coord2[j]) * (edges_coord1[i+1]**2 - edges_coord1[i]**2) * 2.0 * np.pi   
 
     #calculate bin value
     bin_value = mge3d(sol, bin_R, bin_z, inc_deg)
