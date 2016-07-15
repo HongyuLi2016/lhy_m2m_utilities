@@ -26,7 +26,7 @@ date=strftime('%Y-%m-%d %X',localtime())
 
 def mge(sol,x,y):
   rst = np.zeros_like(x)
-  rho0 = sol[:,0]
+  rho0 = sol[:,0] / ( 2.0 * np.pi * sol[:,1]**2 *sol[:,2])
   sigma = sol[:,1]
   q_obs = sol[:,2]
   for i in range(sol.shape[0]):
@@ -39,7 +39,8 @@ def mge3d(sol,R,z,inc_deg):
   rst = np.zeros_like(R)
   sigma = sol[:,1] 
   q_int = (sol[:,2]**2-cosinc**2)**0.5/sininc
-  rho0 = sol[:,0]*2.0*np.pi*(sigma)**2*sol[:,2]/((sigma)**3*(2*np.pi)**1.5*q_int)
+  #rho0 = sol[:,0]*2.0*np.pi*(sigma)**2*sol[:,2]/((sigma)**3*(2*np.pi)**1.5*q_int)
+  rho0 = sol[:,0]/((sigma)**3*(2*np.pi)**1.5*q_int)
   for i in range(sol.shape[0]):
     rst += rho0[i] * np.exp( -(R**2 + z**2/q_int[i]**2) / (2.0 * sigma[i]**2))
   return rst
@@ -339,6 +340,9 @@ class create:
         print >>ff, '{0:4d}  {1:+e} {2}'.format(i,volume[i],good[i])
 
   def surface_brightness(self, sol):
+    '''
+    input mge parameters should be in unit: Luminosiyt (10^10 M_sun), sigma (R_e), flat
+    '''
     scheme_type = self.xconfig.get('sec:%ssb'%self.model_name, 'scheme_type')
     radial_interval = self.xconfig.get('sec:%ssb'%self.model_name, 'radial_interval')
     num_intervals = self.xconfig.get('sec:%ssb'%self.model_name, 'num_intervals')
