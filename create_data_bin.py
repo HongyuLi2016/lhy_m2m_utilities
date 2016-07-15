@@ -159,7 +159,7 @@ class create:
       ax.set_xlabel('x/Re')
       ax.set_ylabel('y/Re')
       fig.savefig('%s/%s/IFU_hull.png'%(self.folder,self.bin_folder),dpi=300)
-
+      plt.close(fig)
     # calculate bin area
     x_part = uniform.rvs(loc=Rect_x_min,scale=Rect_x_max-Rect_x_min,size=n_part)
     y_part = uniform.rvs(loc=Rect_y_min,scale=Rect_y_max-Rect_y_min,size=n_part)
@@ -217,6 +217,7 @@ class create:
       ax.set_xlabel('x/Re')
       ax.set_ylabel('y/Re')
       fig.savefig('%s/%s/IFU_bins.png'%(self.folder,self.bin_folder),dpi=300)
+      plt.close(fig)
         
     # create IFU bin file
     bin_output_name='IFU_bfile1'
@@ -315,12 +316,13 @@ class create:
         bin_R[bin_index] = r * np.cos(theta)
         bin_z[bin_index] = r * np.sin(theta)
 
-    # calculate bin area
-    area = np.zeros(num_bins)
+    # calculate bin volume
+    volume = np.zeros(num_bins)
     for i in xrange(num_coord1):
       for j in xrange(num_coord2):
         bin_index = i * num_coord2 + j
-        area[bin_index] = 0.5 * (edges_coord2[j+1] - edges_coord2[j]) * (edges_coord1[i+1]**2 - edges_coord1[i]**2) * 2.0 * np.pi   
+        volume[bin_index] = (np.sin(edges_coord2[j+1]) - np.sin(edges_coord2[j])) * \
+                      (edges_coord1[i+1]**3 - edges_coord1[i]**3) * 2.0 * np.pi / 3.0  
 
     #calculate bin value
     bin_value = mge3d(sol, bin_R, bin_z, inc_deg)
@@ -333,8 +335,8 @@ class create:
       for i in range(len(bin_value)):
         print >>ff, '{0:4d}  {1:+e}  {2:+e}  {3}'.format(i, bin_value[i], bin_value[i]*0.1, good[i])
     with open('%s/%s/%s'%(self.folder,self.bin_folder,bin_output_name),'w') as ff:
-      for i in range(len(area)):
-        print >>ff, '{0:4d}  {1:+e} {2}'.format(i,area[i],good[i])
+      for i in range(len(volume)):
+        print >>ff, '{0:4d}  {1:+e} {2}'.format(i,volume[i],good[i])
 
   def surface_brightness(self, sol):
     scheme_type = self.xconfig.get('sec:%ssb'%self.model_name, 'scheme_type')
