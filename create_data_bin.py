@@ -241,7 +241,7 @@ class create:
       disp_output_name='IFU_dispdfile1'
       with open('%s/%s/%s'%(self.folder,self.obs_folder,disp_output_name),'w') as ff:
         for i in range(len(xbin)):
-          print >>ff, '{0:4d}  {1:+e}  {2:+e}  {3}'.format(i, disp[i], disp_err[i], good[i])
+          print >>ff, '{0:4d}  {1:+e}  {2:+e}  {3}'.format(i, disp[i]**2, 2.0*disp[i]*disp_err[i], good[i])
 
     if h3 is not None:
       h3_output_name = 'IFU_h3dfile1' 
