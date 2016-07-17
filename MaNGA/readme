@@ -1,0 +1,6 @@
+move_data.py #create the root folder for each galaxy and move auxiliary data into data file
+make_cfg.py #create configuration files for each galaxy
+make_paras.py #create mge_para file for creating interpolation table
+make_data.py #create data and bin files for m2m
+make_run.py #create shell script for batch run 
+make_mgetable.py #create shell script for running ext3dmge

@@ -19,6 +19,7 @@ from time import time,localtime,strftime
 from scipy.spatial import ConvexHull
 from scipy.stats import uniform
 import pyfits
+from manga_util import symmetrize_velfield
 import cProfile
 import pstats
 
@@ -77,9 +78,11 @@ class create:
     
   def IFU(self,xbin,ybin,vel=None,vel_err=None,disp=None,disp_err=None,\
          h3=None, h3_err=None, h4=None, h4_err=None, good=None, Re=None,\
-         dist=None, rebin_x=None, rebin_y=None, n_part=None, plot=False):
+         dist=None, rebin_x=None, rebin_y=None, n_part=None, plot=False,\
+         symmetrize=True):
     if good is None:
       good = np.ones(len(xbin), dtype=int)
+    goodbins = good.astype(bool)
 
     if Re is None:
       print 'Error - Re must be proviede in create_data_bin.IFU'
@@ -230,6 +233,11 @@ class create:
     if vel is not None:
       vel *= tenmegayear * 1e-3 / pc_km / Re_kpc
       vel_err *= tenmegayear * 1e-3 / pc_km / Re_kpc
+      if symmetrize:
+        vel_new = symmetrize_velfield(xbin[goodbins],ybin[goodbins],vel[goodbins],sym=1)
+        vel_err_new = symmetrize_velfield(xbin[goodbins],ybin[goodbins],vel_err[goodbins],sym=2)
+        vel[goodbins] = vel_new
+        vel_err[goodbins] = vel_err_new
       vel_output_name='IFU_veldfile1'
       with open('%s/%s/%s'%(self.folder,self.obs_folder,vel_output_name),'w') as ff:
         for i in range(len(xbin)):
@@ -238,29 +246,44 @@ class create:
     if disp is not None:
       disp *= tenmegayear * 1e-3 / pc_km / Re_kpc
       disp_err *= tenmegayear * 1e-3 / pc_km / Re_kpc
+      if symmetrize:
+        disp_new = symmetrize_velfield(xbin[goodbins],ybin[goodbins],disp[goodbins],sym=2)
+        disp_err_new = symmetrize_velfield(xbin[goodbins],ybin[goodbins],disp_err[goodbins],sym=2)
+        disp[goodbins] = disp_new
+        disp_err[goodbins] = disp_err_new
       disp_output_name='IFU_dispdfile1'
       with open('%s/%s/%s'%(self.folder,self.obs_folder,disp_output_name),'w') as ff:
         for i in range(len(xbin)):
           print >>ff, '{0:4d}  {1:+e}  {2:+e}  {3}'.format(i, disp[i]**2, 2.0*disp[i]*disp_err[i], good[i])
 
     if h3 is not None:
+      if symmetrize:
+        h3_new = symmetrize_velfield(xbin[goodbins],ybin[goodbins],h3[goodbins],sym=1)
+        h3_err_new = symmetrize_velfield(xbin[goodbins],ybin[goodbins],h3_err[goodbins],sym=2)
+        h3[goodbins] = h3_new
+        h3_err[goodbins] = h3_err_new
       h3_output_name = 'IFU_h3dfile1' 
       with open('%s/%s/%s'%(self.folder,self.obs_folder,h3_output_name),'w') as ff:
         for i in range(len(xbin)):
           print >>ff, '{0:4d}  {1:+e}  {2:+e}  {3}'.format(i, h3[i], h3_err[i], good[i])
 
     if h4 is not None:
+      if symmetrize:
+        h4_new = symmetrize_velfield(xbin[goodbins],ybin[goodbins],h4[goodbins],sym=2)
+        h4_err_new = symmetrize_velfield(xbin[goodbins],ybin[goodbins],h4_err[goodbins],sym=2)
+        h4[goodbins] = h4_new
+        h4_err[goodbins] = h4_err_new
       h4_output_name = 'IFU_h4dfile1'
       with open('%s/%s/%s'%(self.folder,self.obs_folder,h4_output_name),'w') as ff:
         for i in range(len(xbin)):
           print >>ff, '{0:4d}  {1:+e}  {2:+e}  {3}'.format(i, h4[i], h4_err[i], good[i])      
 
   def luminosity_density(self,sol,inc_deg):
-    scheme_type      = self.xconfig.get('sec:%sld'%self.model_name, 'scheme_type')   
-    radial_interval  = self.xconfig.get('sec:%sld'%self.model_name, 'radial_interval')
-    log_base         = self.xconfig.getfloat('sec:%sld'%self.model_name, 'log_base') if radial_interval == 'log' else 0.0
-    num_intervals    = self.xconfig.get('sec:%sld'%self.model_name, 'num_intervals')    
-    scheme_size      = self.xconfig.get('sec:%sld'%self.model_name, 'size')
+    scheme_type      = self.xconfig.get('sec:ld', 'scheme_type')   
+    radial_interval  = self.xconfig.get('sec:ld', 'radial_interval')
+    log_base         = self.xconfig.getfloat('sec:ld', 'log_base') if radial_interval == 'log' else 0.0
+    num_intervals    = self.xconfig.get('sec:ld', 'num_intervals')    
+    scheme_size      = self.xconfig.get('sec:ld', 'size')
     
     # split up num_intervals and scheme size 
 
@@ -330,8 +353,8 @@ class create:
     good = np.ones_like(bin_value,dtype=int)
 
     # write data to the data file and bin file
-    sb_output_name = '%sld_datadfile1'%self.model_name
-    bin_output_name = '%sld_bfile1'%self.model_name
+    sb_output_name = 'ld_datadfile1'
+    bin_output_name = 'ld_bfile1'
     with open('%s/%s/%s'%(self.folder,self.obs_folder,sb_output_name),'w') as ff:
       for i in range(len(bin_value)):
         print >>ff, '{0:4d}  {1:+e}  {2:+e}  {3}'.format(i, bin_value[i], bin_value[i]*0.1, good[i])
@@ -343,11 +366,11 @@ class create:
     '''
     input mge parameters should be in unit: Luminosiyt (10^10 M_sun), sigma (R_e), flat
     '''
-    scheme_type = self.xconfig.get('sec:%ssb'%self.model_name, 'scheme_type')
-    radial_interval = self.xconfig.get('sec:%ssb'%self.model_name, 'radial_interval')
-    num_intervals = self.xconfig.get('sec:%ssb'%self.model_name, 'num_intervals')
-    scheme_size = self.xconfig.get('sec:%ssb'%self.model_name, 'size')
-    log_base = config.getfloat('sec:%ssb'%self.model_name, 'log_base') if radial_interval == 'log' else 0.0
+    scheme_type = self.xconfig.get('sec:sb', 'scheme_type')
+    radial_interval = self.xconfig.get('sec:sb', 'radial_interval')
+    num_intervals = self.xconfig.get('sec:sb', 'num_intervals')
+    scheme_size = self.xconfig.get('sec:sb', 'size')
+    log_base = config.getfloat('sec:sb', 'log_base') if radial_interval == 'log' else 0.0
     xintervals = uc.separate_values(num_intervals)
     num_coord1 = int(xintervals[0])
     num_coord2 = int(xintervals[1])
@@ -404,8 +427,8 @@ class create:
     #plt.show()
     
     # write data to the data file and bin file
-    sb_output_name = '%ssb_datadfile1'%self.model_name
-    bin_output_name = '%ssb_bfile1'%self.model_name
+    sb_output_name = 'sb_datadfile1'
+    bin_output_name = 'sb_bfile1'
     with open('%s/%s/%s'%(self.folder,self.obs_folder,sb_output_name),'w') as ff:
       for i in range(len(bin_value)):
         print >>ff, '{0:4d}  {1:+e}  {2:+e}  {3}'.format(i, bin_value[i], bin_value[i]*0.1, good[i])
