@@ -19,11 +19,10 @@ class make_paras:
     os.system('chmod +x {}/create_MGE.sh'.format(gname))
     
 if __name__ == '__main__':
-  #parser = OptionParser()
-  #parser.add_option('-n', action='store',type='string' ,dest='gname',default=None,help='modelname')
-  #(options, args) = parser.parse_args()
-  #gname = options.gname
-  #lhy = make_paras(gname,information=False)
-  flist = read_rc('glist')
-  for gname in flist:
-    lhy = make_paras(gname,mname=gname,information=True)
+  parser = OptionParser()
+  parser.add_option('-g', action='store',type='string' ,dest='gname',default=None,help='modelname')
+  (options, args) = parser.parse_args()
+  gname = options.gname
+  #flist = read_rc('glist')
+  #for gname in flist:
+  lhy = make_paras(gname,mname=gname,information=True)

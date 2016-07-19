@@ -2,13 +2,14 @@
 import numpy as np
 import os
 from optparse import OptionParser
+import pyfits
 cdir = os.getcwd()
 
 duration = 100
 size = 5.0
 n_part = 100000
 integration_time_step = 0.01
-epsilon = 0.005
+epsilon = 0.0005
 #recalculate_weights_frequency = 10
 
 scale_million = 1e10
@@ -30,7 +31,8 @@ if __name__=='__main__':
   os.chdir('{}/{}'.format(cdir,gname))
   os.system('define_M2M_model.py {}'.format(mname))
   rst = np.load('auxiliary_data/JAM_pars.npy')
-  ml = rst[1]
+  zz = pyfits.open('auxiliary_data/information.fits')[1].data['redshift'][0]
+  ml = rst[1] * (1+zz)**4
   inc_deg = rst[2]
   dist = rst[6]
   Re_arcsec = rst[7]
@@ -50,7 +52,7 @@ if __name__=='__main__':
 
   os.system('define_M2M_observ.py {} -nld_data -tld -bld -cMaNGA -r"(0,-1,1e-6,1.0)" -f{}data'.format(mname,mname,mname))
   os.system('define_M2M_observ.py {} -nsb_data -tsb -bsb -cMaNGA -r"(0,-1,1e-6,1.0)" -f{}data'.format(mname,mname,mname))
-  os.system('define_M2M_observ.py {} -nIFU_vel  -tlosvelocity -bIFU -cMaNGA -r"(0,-1,1e-6,1.0)" -f{}data'.format(mname,mname))
+  #os.system('define_M2M_observ.py {} -nIFU_vel  -tlosvelocity -bIFU -cMaNGA -r"(0,-1,1e-6,1.0)" -f{}data'.format(mname,mname))
   os.system('define_M2M_observ.py {} -nIFU_disp -tlosveldisp  -bIFU -cMaNGA -r"(0,-1,1e-6,1.0)" -f{}data'.format(mname,mname))
   #os.system('define_M2M_observ.py {} -nIFU_h3 -tlosveldisp  -bIFU -cMaNGA -r"(0,-1,1e-6,1.0)" -f{}data'.format(mname,mname))
   #os.system(''.format(mname,))

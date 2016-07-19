@@ -114,7 +114,7 @@ class create_ics:
 
     print 'Creat_ics %s run on %s'%(version, date)
     print '.cfg file name: %s'%input_cfg
-
+    print 'Mass-to-light ratio used: %.2f'%self.mass_to_light
 
   #wrapper for fast mge, given position x, return potential
   def Phi(self,x):

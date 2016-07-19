@@ -27,7 +27,7 @@ if __name__ == '__main__':
     eps = float(ff.readline())
     dist = float(ff.readline())
     Re_arcsec = float(ff.readline())
-  mge = np.genfromtxt('{}/auxiliary_data/mge_params'.format(gname),skip_header=5)
+  mge = np.genfromtxt('{}/auxiliary_data/mge_params_{}'.format(gname,gname),skip_header=5)
   hdulist = pyfits.open('{}/auxiliary_data/IFU.fits'.format(gname))
   data1 = hdulist[1].data
   data2 = hdulist[2].data
@@ -55,11 +55,11 @@ if __name__ == '__main__':
     ybin = np.sin(pa)*x0+np.cos(pa)*y0
     rebin_x = np.cos(pa) * tem_rebin_x - np.sin(pa) * tem_rebin_y
     rebin_y = np.sin(pa) * tem_rebin_x + np.cos(pa) * tem_rebin_y
-  #v0_err = data1['v0_err']
-  v0_err = np.zeros_like(vel) + 15.0
+  v0_err = data1['v0_err'].clip(10.0,200.0)
+  #v0_err = np.zeros_like(vel) + 15.0
   vd = data1['vd']
-  #vd_err = data1['vd_err']
-  vd_err = (vd.copy() * 0.05).clip(6.0)
+  vd_err = data1['vd_err'].clip(10.0,200.0)
+  #vd_err = (vd.copy() * 0.05).clip(6.0)
   h3 = data1['h3']
   h3_err = data1['h3_err']
   h4 = data1['h4']
