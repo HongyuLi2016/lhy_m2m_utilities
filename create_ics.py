@@ -111,6 +111,7 @@ class create_ics:
         self.mge=mge_system('%s/%s'%(self.folder,self.interp_folder))
       except:
         print 'Error - Load MGE interpolation table faild!'
+        exit(1)
 
     print 'Creat_ics %s run on %s'%(version, date)
     print '.cfg file name: %s'%input_cfg
