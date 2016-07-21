@@ -4,6 +4,8 @@ v0.0 Create initial conditions for particles, using ELZ method
 '''
 version='v0.0'
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from fastmge import mge_system
 import util_config as uc
@@ -111,6 +113,7 @@ class create_ics:
         self.mge=mge_system('%s/%s'%(self.folder,self.interp_folder))
       except:
         print 'Error - Load MGE interpolation table faild!'
+        exit(1)
 
     print 'Creat_ics %s run on %s'%(version, date)
     print '.cfg file name: %s'%input_cfg

@@ -4,6 +4,8 @@ v0.0 Create constraint data and bin scheme
 '''
 version='v0.0'
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle,Circle
 from fastmge import mge_system
@@ -187,6 +189,7 @@ class create:
             i_between_in[i] = False
             continue
     i_in_convex = i_in_Rmin +  i_between_in
+    hull_volume = i_in_convex.sum()/float(n_part) * (Rect_x_max-Rect_x_min)*(Rect_y_max-Rect_y_min)
     n_part = i_in_convex.sum()
     x_part = x_part[i_in_convex] 
     y_part = y_part[i_in_convex]  
@@ -210,7 +213,7 @@ class create:
       color = ['r','k','b','g','y','c','m','w']
     for i in range(len(xbin)):
       iii = bin_index == i
-      area[i] = iii.sum()/float(n_part) * hull.volume
+      area[i] = iii.sum()/float(n_part) * hull_volume
       if plot:
         color_index=i%8
         ax.plot(x_part[iii],y_part[iii],'.',color=color[color_index],markersize=1.0,zorder=0)

@@ -27,7 +27,7 @@ if __name__ == '__main__':
     eps = float(ff.readline())
     dist = float(ff.readline())
     Re_arcsec = float(ff.readline())
-  mge = np.genfromtxt('{}/auxiliary_data/mge_params_{}'.format(gname,gname),skip_header=5)
+  mge = np.genfromtxt('{}/auxiliary_data/mge_params_{}'.format(gname,mname),skip_header=5)
   hdulist = pyfits.open('{}/auxiliary_data/IFU.fits'.format(gname))
   data1 = hdulist[1].data
   data2 = hdulist[2].data
@@ -79,4 +79,4 @@ if __name__ == '__main__':
   lhy.luminosity_density(mge,inc_deg)
   lhy.IFU(xbin,ybin,vel=vel,vel_err=v0_err,disp=vd,disp_err=vd_err,h3=h3,h3_err=h3_err,\
           h4=h4,h4_err=h4_err,rebin_x=rebin_x,rebin_y=rebin_y,dist=dist,n_part=300000,\
-          plot=True,Re=Re_arcsec,good=goodbins, symmetrize=options.symmetrize)
+          plot=False,Re=Re_arcsec,good=goodbins, symmetrize=options.symmetrize)
