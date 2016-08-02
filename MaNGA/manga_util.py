@@ -16,6 +16,21 @@ def write_mge(size,inc_deg,G,sol,fname='mge_params',outpath='./'):
     for i in range(sol.shape[0]):
       print >>ff, '{:e} {:e} {:e}'.format(sol[i,0],sol[i,1],sol[i,2])
 
+def write_interp_table(size,inc_deg,G,sol,L_tot,fname='mge_pf',num_R=1500,num_Z=1500,outpath='./'):
+  '''
+  write pot data into file, which will subsitute the file in mge folder and give the correct total luminosity
+  sol unit: Luminosity 10^10 Lsun sigma in Re
+  '''
+  with open('{}/{}'.format(outpath,fname),'w') as ff:
+    print >>ff, '{:e}'.format(size)
+    print >>ff, '{:e}'.format(inc_deg)
+    print >>ff, '{:e}'.format(G)
+    print >>ff, '{:e}  {:e}'.format(0.1,1e-4)
+    print >>ff, '{}'.format(sol.shape[0])
+    for i in range(sol.shape[0]):
+      print >>ff, '{:e} {:e} {:e}'.format(sol[i,0],sol[i,1],sol[i,2])
+    print >>ff,'{:d} {:d}'.format(num_R,num_Z) 
+    print >>ff,'{:e}'.format(L_tot)
 
 def _rotate_points(x, y, ang):
     """

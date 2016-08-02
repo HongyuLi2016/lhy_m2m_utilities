@@ -2,6 +2,7 @@
 import numpy as np
 import os
 from manga_util import write_mge
+from manga_util import write_interp_table
 import util_config as uc
 from optparse import OptionParser
 
@@ -28,8 +29,11 @@ class make_paras:
     self.sol[:,1] /= self.Re_arcsec
     self.pot[:,0] = 2.0 * np.pi * self.pot[:,0] * (self.pot[:,1] * pc)**2 * self.pot[:,2] / 1e10  
     self.pot[:,1] /= self.Re_arcsec
+    self.L_tot = np.sum(self.sol[:,0])
     write_mge(self.size,self.inc_deg,self.G,self.sol,fname='mge_params_{}'.format(self.model),outpath='{}/auxiliary_data'.format(gname))
     write_mge(self.size,self.inc_deg,self.G,self.pot,fname='pot_params_{}'.format(self.model),outpath='{}/auxiliary_data'.format(gname))
+    write_interp_table(self.size,self.inc_deg,self.G,self.pot,self.L_tot,fname='mge_pf_{}'.format(self.model),outpath='{}/auxiliary_data'.format(gname))
+    #write_interp_table(self.size,self.inc_deg,self.G,self.sol,self.L_tot,outpath='{}/auxiliary_data'.format(gname))
     if information:
       with open('{}/auxiliary_data/information.dat'.format(gname),'w') as ff:
         print >>ff, '%.2f'%pa

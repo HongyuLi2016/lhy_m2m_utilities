@@ -50,7 +50,7 @@ ticks_font = matplotlib.font_manager.FontProperties(family='times new roman', st
 text_font = matplotlib.font_manager.FontProperties(family='times new roman', style='normal', size=10, weight='bold', stretch='normal')
 ticks_font1 = matplotlib.font_manager.FontProperties(family='times new roman', style='normal', size=8, weight='bold', stretch='normal')
 
-def plot_lines(x,y,z,ax=None):
+def plot_lines(x,y,z,ax=None,ylim=None):
   # plot x vs. z, color coded by y
   if ax is None:
     ax = plt.gca()
@@ -63,6 +63,8 @@ def plot_lines(x,y,z,ax=None):
     zz = z[ii][jj]
     ax.plot(xx,zz,'.',markersize=5,color=sauron(norm(y_unique[i])))
     ax.plot(xx,zz,'-',lw=1.5,color=sauron(norm(y_unique[i])))
+    if ylim is not None:
+      ax.set_ylim(ylim)
     for l in ax.get_xticklabels():
       #l.set_rotation(45) 
       l.set_fontproperties(ticks_font)
@@ -70,10 +72,12 @@ def plot_lines(x,y,z,ax=None):
       #l.set_rotation(45) 
       l.set_fontproperties(ticks_font)
 
-def plot_2d(x,y,z,ax=None,log=True):
+def plot_2d(x,y,z,ax=None,log=True,c_lim=None):
   if ax is None:
     ax = plt.gca()
   fig = plt.gcf()
+  if c_lim is not None:
+    z = z.clip(10**c_lim[0],10**c_lim[1])
   if log:
     z = np.log10(z)
   for l in ax.get_xticklabels():
@@ -132,19 +136,19 @@ def plot_2d(x,y,z,ax=None,log=True):
     l.set_fontproperties(ticks_font1)
 
 def plot_chi2(x,y,z,xlabel='$\mathbf{M/L}$',ylabel='$\mathbf{inclination}$',zlabel='$\mathbf{\chi^2}$',\
-              out_name='chi2.png',rst_folder='./',log=True):
+              out_name='chi2.png',rst_folder='./',log=True,c_lim=None,ylim=None):
   fig = plt.figure(figsize = (4,3))
   fig.subplots_adjust(left=0.12, bottom=0.08, right=0.96, top=0.98,wspace=0.2, hspace=0.4)
   ax1 = fig.add_subplot(2,2,1)
   ax1.set_ylabel(zlabel)
   ax1.set_xlabel(xlabel)
-  plot_lines(x,y,z,ax=ax1)
+  plot_lines(x,y,z,ax=ax1,ylim=ylim)
   ax2 = fig.add_subplot(2,2,2)
   #ax2.set_ylabel(r'$\mathbf{\chi^2}$')
   ax2.set_xlabel(ylabel)
-  plot_lines(y,x,z,ax=ax2)
+  plot_lines(y,x,z,ax=ax2,ylim=ylim)
   ax3 = fig.add_subplot(2,2,3)
-  plot_2d(x,y,z,ax=ax3,log=log)
+  plot_2d(x,y,z,ax=ax3,log=log,c_lim=c_lim)
   #plt.show()
   fig.savefig('{}/{}'.format(rst_folder,out_name),dpi=300)
 
@@ -163,7 +167,7 @@ if __name__ == '__main__':
   for chi2_path in chi2_list:
     out_name = 'Chi2_{}.png'.format(chi2_path.split('/')[-1][5:-4])
     chi2 = np.load(chi2_path)
-    plot_chi2(ml,inc,chi2,rst_folder=rst_folder,out_name=out_name)
+    plot_chi2(ml,inc,chi2,rst_folder=rst_folder,out_name=out_name,c_lim=[-1.0,1.5],ylim=[0,10])
   for lambda_path in lambda_list:
     out_name = 'lambda_{}.png'.format(lambda_path.split('/')[-1][7:-4])
     lambda_obs = np.load(lambda_path)

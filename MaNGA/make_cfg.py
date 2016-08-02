@@ -54,6 +54,10 @@ if __name__=='__main__':
   os.system('define_M2M_observ.py {} -nsb_data -tsb -bsb -cMaNGA -r"(0,-1,1e-6,1.0)" -f{}data'.format(mname,mname,mname))
   #os.system('define_M2M_observ.py {} -nIFU_vel  -tlosvelocity -bIFU -cMaNGA -r"(0,-1,1e-6,1.0)" -f{}data'.format(mname,mname))
   os.system('define_M2M_observ.py {} -nIFU_disp -tlosveldisp  -bIFU -cMaNGA -r"(0,-1,1e-6,1.0)" -f{}data'.format(mname,mname))
-  #os.system('define_M2M_observ.py {} -nIFU_h3 -tlosveldisp  -bIFU -cMaNGA -r"(0,-1,1e-6,1.0)" -f{}data'.format(mname,mname))
+  #os.system('define_M2M_observ.py {} -nIFU_h3 -th3  -bIFU -cMaNGA -r"(0,-1,1e-6,1.0)" -f{}data'.format(mname,mname))
+  #os.system('define_M2M_observ.py {} -nIFU_h4 -th4  -bIFU -cMaNGA -r"(0,-1,1e-6,1.0)" -f{}data'.format(mname,mname))
+  #os.system('define_ghlosvd_group.py {} -mIFU_vel -nIFU_losvd  -sIFU_disp -g"(IFU_h3,IFU_h4)"'.format(mname))
+  #os.system('define_ghlosvd_group.py {}'.format(mname))
+  
   #os.system(''.format(mname,))
   #os.system(''.format(mname,))
