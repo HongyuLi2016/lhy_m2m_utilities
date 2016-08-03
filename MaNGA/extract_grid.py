@@ -27,10 +27,16 @@ if __name__ == '__main__':
     cfg = cfg_list[i]
     model_name = cfg.split('/')[-1][:-4]
     rst_name = '{}/rst_{}'.format(gname,model_name)  
-    lhy = extract(rst_name,model_name)
-    chi2_total[i] = lhy.total_chi2()
-    chi2_obs.append([lhy.chi2[obs] for obs in lhy.obs_list])
-    lambda_value.append([lhy.lambda_value[obs] for obs in lhy.obs_list])
+    try:
+      lhy = extract(rst_name,model_name)
+      chi2_total[i] = lhy.total_chi2()
+      chi2_obs.append([lhy.chi2[obs] for obs in lhy.obs_list])
+      lambda_value.append([lhy.lambda_value[obs] for obs in lhy.obs_list])
+    except:
+      chi2_total[i] = 20.0
+      chi2_obs.append([20.0 for obs in lhy.obs_list])
+      lambda_value.append([2e-3 for obs in lhy.obs_list])
+
     ml[i] = float(model_name.split('_')[-1])
     inc[i] = float(model_name.split('_')[-2])
   

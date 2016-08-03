@@ -120,6 +120,7 @@ class extract:
         single_value = yy(time.max())
         if abs(single_value - value[-1])/value[-1] > 0.25:
           print 'Warning - final chi2 value and linefit chi2 value do not agree well, chi2: {:.3f}  fit: {:.3f}'.format(single_value,value[-1])
+          single_value = value[-1]
       self.chi2[obs] = single_value
       #plt.plot(time[iii],yy(time[iii]),'r',lw=3)
       #plt.plot(time,value)

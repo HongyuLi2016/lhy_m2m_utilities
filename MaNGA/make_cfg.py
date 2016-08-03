@@ -32,7 +32,7 @@ if __name__=='__main__':
   os.system('define_M2M_model.py {}'.format(mname))
   rst = np.load('auxiliary_data/JAM_pars.npy')
   zz = pyfits.open('auxiliary_data/information.fits')[1].data['redshift'][0]
-  ml = rst[1] * (1+zz)**4
+  ml = rst[1]# * (1+zz)**4
   inc_deg = rst[2]
   dist = rst[6]
   Re_arcsec = rst[7]

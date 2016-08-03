@@ -185,13 +185,13 @@ class create_ics:
     R=np.zeros(num_particles)
     z=np.zeros(num_particles)
     #uniform randam boundary for Renergy and cvalue
-    loc_logb=np.log10(self.size/LOGB)
-    scale_logb=np.log10(self.size)-np.log10(self.size/LOGB)
-    circ_limit=cvalue_limit
-    loc_circ=np.log10(circ_limit/NCIRC)
-    scale_circ=np.log10(circ_limit)-np.log10(circ_limit/NCIRC)
+    #loc_logb=np.log10(self.size/LOGB)
+    #scale_logb=np.log10(self.size)-np.log10(self.size/LOGB)
+    #circ_limit=cvalue_limit
+    #loc_circ=np.log10(circ_limit/NCIRC)
+    #scale_circ=np.log10(circ_limit)-np.log10(circ_limit/NCIRC)
     #initialize random table, index 0: Renergy 1: cvalue 2: R
-    self.boundary=np.array([[loc_logb,scale_logb],[loc_circ,scale_circ],[0.0,self.size]])
+    #self.boundary=np.array([[loc_logb,scale_logb],[loc_circ,scale_circ],[0.0,self.size]])
     self.initialize=True
 
     # sample energy and lz
@@ -221,7 +221,7 @@ class create_ics:
         if use_logz:
           lz[i] = (cvalue + 1.0) * max_lz # Question: why lz only have positive value?
         else:
-          lz=uniform.rvs(loc=-max_lz,scale=2*max_lz,size=num_particles)  
+          lz[i]=uniform.rvs(loc=-max_lz,scale=2*max_lz,size=1)  
         if abs(lz[i])>0.0001 and abs(lz[i])<max_lz-0.0001:
           break
       
@@ -348,13 +348,14 @@ class create_ics:
 def main():
   parser = OptionParser()
   parser.add_option('-f', action='store',type='string' ,dest='folder',default=None,help='folder name')
+  parser.add_option('-l', action='store_false' ,dest='use_logz',default=True,help='pseudo log bin for lz')
   (options, args) = parser.parse_args()
   if len(args)!=1:
     print 'Error - model name must be provided!'
   model_name=args[0]
   folder=options.folder
   lhy = create_ics(model_name, folder = folder)
-  xx,vv = lhy.Elz()
+  xx,vv = lhy.Elz(use_logz=options.use_logz)
   lhy.output_ics_file(xx,vv,lhy.weight)
     
 if __name__=='__main__':

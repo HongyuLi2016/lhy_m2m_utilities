@@ -13,4 +13,4 @@ mv $1/MGE$2/mge_pf $1/MGE$2/mge_pf_old
 
 cp $1/auxiliary_data/mge_pf_$2 $1/MGE$2/mge_pf
 
-create_ics.py $2 -f $1
+create_ics.py $2 -f $1 -l
