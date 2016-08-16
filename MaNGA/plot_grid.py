@@ -2,7 +2,7 @@
 import numpy as np
 import glob
 import matplotlib
-#matplotlib.use('Agg')
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib import colors,rc
 from matplotlib.patches import Rectangle,Circle
@@ -167,7 +167,8 @@ if __name__ == '__main__':
   for chi2_path in chi2_list:
     out_name = 'Chi2_{}.png'.format(chi2_path.split('/')[-1][5:-4])
     chi2 = np.load(chi2_path)
-    plot_chi2(ml,inc,chi2,rst_folder=rst_folder,out_name=out_name,c_lim=[-1.0,1.5],ylim=[0,10])
+    #plot_chi2(ml,inc,chi2,rst_folder=rst_folder,out_name=out_name,c_lim=[-1.0,1.5],ylim=[0,10])
+    plot_chi2(ml,inc,chi2,rst_folder=rst_folder,out_name=out_name)
   for lambda_path in lambda_list:
     out_name = 'lambda_{}.png'.format(lambda_path.split('/')[-1][7:-4])
     lambda_obs = np.load(lambda_path)

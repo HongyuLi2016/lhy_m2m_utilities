@@ -45,6 +45,11 @@ if __name__ == '__main__':
   os.system('mkdir -p {}/grid_rst'.format(gname))
   np.save('{}/grid_rst/grid.npy'.format(gname),[inc,ml])
   np.save('{}/grid_rst/chi2_total.npy'.format(gname),chi2_total)
+  ii = np.argsort(chi2_total)
+  with open('{}/grid_rst/chi2_total.dat'.format(gname),'w') as ff:
+    for i in range(10):
+      print >>ff, 'M^*/L: {:.3f} inclination: {:.1f} chi2: {:.3f}'.format(\
+                   ml[ii][i],inc[ii][i],chi2_total[ii][i])
   for i in range(len(lhy.obs_list)):
     chi2 = chi2_obs[:,i]
     lambda_obs = lambda_value[:,i]
