@@ -39,10 +39,11 @@ class create_grid_cfg:
       os.system('define_M2M_scheme.py {} -nsb -tpolar -i"(16,16)" -s"(3.0)" -f{}bins'.format(nmodel_name,nmodel_name))
       os.system('define_M2M_scheme.py {} -nIFU -ttree -f{}bins'.format(nmodel_name,nmodel_name))
     
-      os.system('define_M2M_observ.py {} -nld_data -tld -bld -cMaNGA -r"(0,-1,1e-6,1.0)" -f{}data'.format(nmodel_name,nmodel_name))
-      os.system('define_M2M_observ.py {} -nsb_data -tsb -bsb -cMaNGA -r"(0,-1,1e-6,1.0)" -f{}data'.format(nmodel_name,nmodel_name))
-      #os.system('define_M2M_observ.py {} -nIFU_vel  -tlosvelocity -bIFU -cMaNGA -r"(0,-1,1e-6,1.0)" -f{}data'.format(nmodel_name,nmodel_name))
-      os.system('define_M2M_observ.py {} -nIFU_disp -tlosveldisp  -bIFU -cMaNGA -r"(0,-1,1e-6,1.0)" -f{}data'.format(nmodel_name,nmodel_name))
+      os.system('update_observ.py {} -nIFU_vel -f{}data'.format(nmodel_name,nmodel_name))
+      os.system('update_observ.py {} -nIFU_disp -f{}data'.format(nmodel_name,nmodel_name))
+      os.system('update_observ.py {} -nld_data -f{}data'.format(nmodel_name,nmodel_name))
+      os.system('update_observ.py {} -nsb_data -f{}data'.format(nmodel_name,nmodel_name))
+
       
 
     '''

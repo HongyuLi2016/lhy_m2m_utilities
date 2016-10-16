@@ -136,11 +136,11 @@ class create:
     Rect_y_min = np.mean(y_hull.min())
     Rect_y_max = np.mean(y_hull.max())
     with open('%s/%s/IFU_hull'%(self.folder,self.bin_folder),'w') as ff:
-      print >>ff, '{0:d}  {1:+e}  {2:+e}  {3:+e}  {4:+e}  {5:+e}  {6:+e}'.format(len(x_hull), Rmin, Rmax,\
+      print >>ff, '{0:d}  {1:+e}  {2:+e}  {3:+e}  {4:+e}  {5:+e}  {6:+e}'.format(len(x_hull)+1, Rmin, Rmax,\
                    Rect_x_min, Rect_x_max, Rect_y_min, Rect_y_max)
       for i in range(len(x_hull)):
         print >>ff, '{0:+e}  {1:+e}'.format(x_hull[i], y_hull[i])
-
+      print >>ff, '{0:+e}  {1:+e}'.format(x_hull[0], y_hull[0])
     if plot:
       fig = plt.figure(figsize=(6,6))
       ax = fig.add_subplot(1,1,1)
