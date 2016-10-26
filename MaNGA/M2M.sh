@@ -7,3 +7,6 @@ eor_obs.py rst_$1 > rst_$1/observables/repro_analysis
 eor_energy.py rst_$1 > rst_$1/particles/energy_analysis
 eor_weights.py rst_$1 > rst_$1/particles/weights_analysis
 mv std$1 rst_$1
+plotconv.py rst_$1 >> rst_$1/std$1
+plotvrms.py rst_$1 -m IFU_vel -d IFU_disp
+

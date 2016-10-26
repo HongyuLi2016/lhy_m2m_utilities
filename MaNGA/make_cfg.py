@@ -32,10 +32,12 @@ if __name__=='__main__':
   os.system('define_M2M_model.py {}'.format(mname))
   rst = np.load('auxiliary_data/JAM_pars.npy')
   zz = pyfits.open('auxiliary_data/information.fits')[1].data['redshift'][0]
+  sol = rst[0]
   ml = rst[1]# * (1+zz)**4
   inc_deg = rst[2]
   dist = rst[6]
   Re_arcsec = rst[7]
+  size = (sol[:,1].max()/Re_arcsec*3.0)[0].clip(5,None)
   Re_kpc = Re_arcsec * dist * np.pi / 0.648 * 1e-3
   revised_gravconstant = gravconstant * msun * tenmegayear * tenmegayear / (pc_km * pc_km * pc_km * 1e18 * Re_kpc * Re_kpc * Re_kpc)
   # model parameters
@@ -45,6 +47,7 @@ if __name__=='__main__':
   os.system('update_grav_constant.py {} -g{:e}'.format(mname, revised_gravconstant[0]))
   os.system('update_orbit_int.py {} -t{:f}'.format(mname, integration_time_step))
   os.system('update_weight_adapt.py {} -e{:f} -p"(0,-1)"'.format(mname,epsilon))
+  os.system('update_potential.py {}'.format(mname))
   # bin scheme
   os.system('define_M2M_scheme.py {} -nld -taxisym -i"(16,32)" -s"(3.0)" -f{}bins'.format(mname,mname))
   os.system('define_M2M_scheme.py {} -nsb -tpolar -i"(16,16)" -s"(3.0)" -f{}bins'.format(mname,mname))
@@ -54,6 +57,10 @@ if __name__=='__main__':
   os.system('define_M2M_observ.py {} -nsb_data -tsb -bsb -cMaNGA -r"(0,-1,1e-6,1.0)" -f{}data'.format(mname,mname,mname))
   os.system('define_M2M_observ.py {} -nIFU_vel  -tlosvelocity -bIFU -cMaNGA -r"(0,-1,1e-6,1.0)" -f{}data'.format(mname,mname))
   os.system('define_M2M_observ.py {} -nIFU_disp -tlosveldisp  -bIFU -cMaNGA -r"(0,-1,1e-6,1.0)" -f{}data'.format(mname,mname))
+  os.system('update_observ.py {} -nld_data -uno -r"(0,-1,2e-3,1.0)"'.format(mname))
+  os.system('update_observ.py {} -nsb_data -uno -r"(0,-1,2e-3,1.0)"'.format(mname))
+  os.system('update_observ.py {} -nIFU_vel -uno -r"(0,-1,2e-3,1.0)"'.format(mname))
+  os.system('update_observ.py {} -nIFU_disp -uno -r"(0,-1,2e-3,1.0)"'.format(mname))
   #os.system('define_M2M_observ.py {} -nIFU_h3 -th3  -bIFU -cMaNGA -r"(0,-1,1e-6,1.0)" -f{}data'.format(mname,mname))
   #os.system('define_M2M_observ.py {} -nIFU_h4 -th4  -bIFU -cMaNGA -r"(0,-1,1e-6,1.0)" -f{}data'.format(mname,mname))
   #os.system('define_ghlosvd_group.py {} -mIFU_vel -nIFU_losvd  -sIFU_disp -g"(IFU_h3,IFU_h4)"'.format(mname))

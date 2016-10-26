@@ -12,12 +12,17 @@ import sys
 if __name__ == '__main__':
   parser = OptionParser()
   parser.add_option('-g', action='store',type='string' ,dest='gname',default=None,help='galaxy name')
+  parser.add_option('-m', action='store',type='string' ,dest='mname',default=None,help='model name')
   (options, args) = parser.parse_args()
   gname = options.gname
   if gname is None:
     print 'Error - galaxy name must be provided!'
     sys.exit()
-  cfg_list = glob.glob('{}/{}_*.cfg'.format(gname,gname))
+  if options.mname is None:
+    mname = gname
+  else:
+    mname = options.mname
+  cfg_list = glob.glob('{}/{}_*.cfg'.format(gname,mname))
   chi2_total = np.zeros(len(cfg_list)) 
   ml = np.zeros(len(cfg_list))
   inc = np.zeros(len(cfg_list))
