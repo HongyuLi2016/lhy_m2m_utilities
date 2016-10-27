@@ -27,7 +27,7 @@ if __name__ == '__main__':
     eps = float(ff.readline())
     dist = float(ff.readline())
     Re_arcsec = float(ff.readline())
-  mge = np.genfromtxt('{}/auxiliary_data/mge_params_{}'.format(gname,mname),skip_header=5)
+  mge = np.genfromtxt('{}/MGE{}/m2m_mge_lum'.format(gname,mname),skip_header=1)
   hdulist = pyfits.open('{}/auxiliary_data/IFU.fits'.format(gname))
   data1 = hdulist[1].data
   data2 = hdulist[2].data

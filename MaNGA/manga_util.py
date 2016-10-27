@@ -4,7 +4,7 @@ from scipy import interpolate
 
 def write_mge(size,inc_deg,G,sol,fname='mge_params',outpath='./'):
   '''
-  write mge data into file for creating interpolation table
+  write mge data into file for creating interpolation table using cmge
   sol unit: Luminosity 10^10 Lsun sigma in Re
   '''
   with open('{}/{}'.format(outpath,fname),'w') as ff:
@@ -15,6 +15,18 @@ def write_mge(size,inc_deg,G,sol,fname='mge_params',outpath='./'):
     print >>ff, '{}'.format(sol.shape[0])
     for i in range(sol.shape[0]):
       print >>ff, '{:e} {:e} {:e}'.format(sol[i,0],sol[i,1],sol[i,2])
+
+def write_pymge(sol,fname='m2m_mge_lum',outpath='./'):
+  '''
+  write mge data into file for creating interpolation table using pymge
+  sol unit: Luminosity 10^10 Lsun sigma in Re
+  '''
+  with open('{}/{}'.format(outpath,fname),'w') as ff:
+    print >>ff, '{}'.format(sol.shape[0])
+    for i in range(sol.shape[0]):
+      print >>ff, '{:e} {:e} {:e}'.format(sol[i,0],sol[i,1],sol[i,2])
+
+
 
 def write_interp_table(size,inc_deg,G,sol,L_tot,fname='mge_pf',num_R=1500,num_Z=1500,outpath='./'):
   '''
