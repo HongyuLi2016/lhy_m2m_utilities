@@ -79,4 +79,4 @@ if __name__ == '__main__':
   lhy.luminosity_density(mge,inc_deg)
   lhy.IFU(xbin,ybin,vel=vel,vel_err=v0_err,disp=vd,disp_err=vd_err,h3=h3,h3_err=h3_err,\
           h4=h4,h4_err=h4_err,rebin_x=rebin_x,rebin_y=rebin_y,dist=dist,n_part=300000,\
-          plot=False,Re=Re_arcsec,good=goodbins, symmetrize=options.symmetrize)
+          plot=False,Re=Re_arcsec,good=goodbins, symmetrize=options.symmetrize,vertexStep=1)

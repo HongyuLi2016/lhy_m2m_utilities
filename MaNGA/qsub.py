@@ -13,6 +13,7 @@ if __name__ == '__main__':
     print 'galaxy name must be provided!'
     exit(1)
   pbs_files = glob.glob('%s/pbsscript/*.pbs'%options.gname)
+  pbs_files.sort()
   if len(pbs_files) == 0:
     print 'no .pbs in %s/pbsscript folder'%options.gname
   for npbs in pbs_files:
@@ -24,5 +25,5 @@ if __name__ == '__main__':
         os.system('sleep 1.0')
     else:
       os.system('qsub %s'%npbs)
-      os.system('sleep 1.0')
+      os.system('sleep 0.5')
 

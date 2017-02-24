@@ -5,11 +5,11 @@ from optparse import OptionParser
 import pyfits
 cdir = os.getcwd()
 
-duration = 100
+duration = 150
 size = 5.0
 n_part = 100000
 integration_time_step = 0.01
-epsilon = 0.0005
+epsilon = 0.0002
 #recalculate_weights_frequency = 10
 
 scale_million = 1e10
@@ -65,6 +65,6 @@ if __name__=='__main__':
   #os.system('define_M2M_observ.py {} -nIFU_h4 -th4  -bIFU -cMaNGA -r"(0,-1,1e-6,1.0)" -f{}data'.format(mname,mname))
   #os.system('define_ghlosvd_group.py {} -mIFU_vel -nIFU_losvd  -sIFU_disp -g"(IFU_h3,IFU_h4)"'.format(mname))
   #os.system('define_ghlosvd_group.py {}'.format(mname))
-  
+
   #os.system(''.format(mname,))
   #os.system(''.format(mname,))

@@ -9,4 +9,5 @@ create_mge_tables.py $2 -p MGE$2 > MGE$2/stdmge
 
 cd ..
 
-create_ics.py $2 -f $1 -l
+#create_ics.py $2 -f $1 -l # use flat z
+create_ics.py $2 -f $1 # use logz

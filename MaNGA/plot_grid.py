@@ -106,7 +106,7 @@ def plot_2d(x,y,z,ax=None,log=True,c_lim=None):
   for i in range(0,len(pos_y)-1):
     size_y[i] = pos_y[i+1] - pos_y[i]
   size_y[-1] = (y_unique[-1]-pos_y[-1])*2.0
-  norm = colors.Normalize(vmin=z.min()*0.9, vmax=z.max()*1.1)
+  norm = colors.Normalize(vmin=z.min()-abs(z.min()*0.1), vmax=z.max()+abs(z.min()*0.1))
   for i in range(len(pos_x)):
     for j in range(len(pos_y)):
       iii = (x==x_unique[i])*(y==y_unique[j])

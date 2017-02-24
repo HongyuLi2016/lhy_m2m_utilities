@@ -80,7 +80,7 @@ class create:
   def IFU(self,xbin,ybin,vel=None,vel_err=None,disp=None,disp_err=None,\
          h3=None, h3_err=None, h4=None, h4_err=None, good=None, Re=None,\
          dist=None, rebin_x=None, rebin_y=None, n_part=None, plot=False,\
-         symmetrize=True):
+         symmetrize=True,vertexStep=1):
     if good is None:
       good = np.ones(len(xbin), dtype=int)
     goodbins = good.astype(bool)
@@ -115,8 +115,8 @@ class create:
     #create IFU bin hull
     if rebin_x is not None:  
       hull = ConvexHull(np.array([rebin_x,rebin_y]).T)
-      x_hull = rebin_x[hull.vertices][::-1]
-      y_hull = rebin_y[hull.vertices][::-1] # must be clockwise!      
+      x_hull = rebin_x[hull.vertices][::-vertexStep] # vertexStep != 1 means do not use all the vertices
+      y_hull = rebin_y[hull.vertices][::-vertexStep] # must be clockwise!      
     else:
       print 'Error - rebined data position should be provided!'
       exit(0)

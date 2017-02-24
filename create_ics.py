@@ -170,6 +170,8 @@ class create_ics:
           plot=True):
     if num_particles is None:
       num_particles = self.num_particles
+    if use_logz:
+      print 'Using log distribution for Lz'
     self.LOGB = LOGB
     self.NCIRC = NCIRC
     self.cvalue_limit = cvalue_limit
