@@ -3,6 +3,7 @@ import numpy as np
 import os
 from optparse import OptionParser
 import pyfits
+import pickle
 cdir = os.getcwd()
 
 duration = 150
@@ -30,21 +31,22 @@ if __name__=='__main__':
     mname = options.mname
   os.chdir('{}/{}'.format(cdir,gname))
   os.system('define_M2M_model.py {}'.format(mname))
-  rst = np.load('auxiliary_data/JAM_pars.npy')
   zz = pyfits.open('auxiliary_data/information.fits')[1].data['redshift'][0]
-  sol = rst[0]
-  ml = rst[1]# * (1+zz)**4
-  inc_deg = rst[2]
-  dist = rst[6]
-  Re_arcsec = rst[7]
-  size = (sol[:,1].max()/Re_arcsec*3.0)[0].clip(5,None)
+  with open('auxiliary_data/JAM_pars.dat') as f:
+      rst = pickle.load(f)
+  sol = rst['lum2d']
+  ml = rst['bestPars'][2]
+  inc_deg = np.degrees(np.arccos(rst['bestPars'][0]))
+  dist = rst['dist']
+  Re_arcsec = rst['Re_arcsec']
+  size = (sol[:,1].max()/Re_arcsec*3.0).clip(5,None)
   Re_kpc = Re_arcsec * dist * np.pi / 0.648 * 1e-3
   revised_gravconstant = gravconstant * msun * tenmegayear * tenmegayear / (pc_km * pc_km * pc_km * 1e18 * Re_kpc * Re_kpc * Re_kpc)
   # model parameters
   os.system('update_model.py {} -t{} -s{} -i{} -uyes'.format(mname,duration,size,inc_deg))
   os.system('define_M2M_particles.py {} -n{} -pfrom_elz -vfrom_elz -fP{}_{:.3f}'.format(mname,n_part,mname,ml))
   os.system('update_lm.py {} -m{:.3f} -nMGE -fMGE{}'.format(mname, ml, mname))
-  os.system('update_grav_constant.py {} -g{:e}'.format(mname, revised_gravconstant[0]))
+  os.system('update_grav_constant.py {} -g{:e}'.format(mname, revised_gravconstant))
   os.system('update_orbit_int.py {} -t{:f}'.format(mname, integration_time_step))
   os.system('update_weight_adapt.py {} -e{:f} -p"(0,-1)"'.format(mname,epsilon))
   os.system('update_potential.py {}'.format(mname))
