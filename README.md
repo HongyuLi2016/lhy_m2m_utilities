@@ -1,7 +1,15 @@
-These codes are utilities for the pyM2M dymamical model
+# Utilities for the pyM2M dymamical modelling
 
-create_isc.py is used for creating initial particle conditions
+* `m2m-create_isc.py`: creating initial particle conditions
 
-create_data_bin.py is used for creating the data files and bin files for pym2m
+* `m2m_data_bin_util.py`: utilities for creating input data files and bin files
 
-This is a special version on cluster zen 
+* `m2m_util_extract.py`: extract basic informations after the model run
+
+## MaNGA
+Utilities for preparing MaNGA data for a pym2m model
+
+* `m2m-make_cfg.py`: create configuration file (.cfg) file for pym2m model
+* `m2m-make_manga_data.py`: convert MaNGA data to the required format for pym2m model
+* `m2m-prepare.sh`: prepare all the necessary files for pym2m model
+* `m2m-run.sh`: start a pym2m model run
