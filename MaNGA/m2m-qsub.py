@@ -22,8 +22,8 @@ if __name__ == '__main__':
       if not os.path.exists('{}/rst_{}'.format(options.gname,model_name)):
         print '%s do not exist, qsub again'%model_name
         os.system('qsub %s'%npbs)
-        os.system('sleep 1.0')
+        os.system('sleep 0.2')
     else:
       os.system('qsub %s'%npbs)
-      os.system('sleep 0.5')
+      os.system('sleep 0.2')
 
