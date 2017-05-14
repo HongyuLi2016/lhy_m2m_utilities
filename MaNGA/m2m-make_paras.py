@@ -2,8 +2,8 @@
 import numpy as np
 import os
 import pickle
-from manga_util import write_pymge
-from manga_util import write_interp_table
+from m2m_manga_utils import write_pymge
+from m2m_manga_utils import write_interp_table
 import util_config as uc
 from optparse import OptionParser
 

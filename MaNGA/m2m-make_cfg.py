@@ -21,8 +21,10 @@ gravconstant = 6.6742e-11
 
 if __name__=='__main__':
   parser = OptionParser()
-  parser.add_option('-g', action='store',type='string' ,dest='gname',default=None,help='galaxy name')
-  parser.add_option('-m', action='store',type='string' ,dest='mname',default=None,help='model name')
+  parser.add_option('-g', action='store', type='string', dest='gname',
+                    default=None, help='galaxy name')
+  parser.add_option('-m', action='store', type='string', dest='mname',
+                    default=None, help='model name')
   (options, args) = parser.parse_args()
   gname = options.gname
   if options.mname is None:
@@ -39,21 +41,31 @@ if __name__=='__main__':
   inc_deg = np.degrees(np.arccos(rst['bestPars'][0]))
   dist = rst['dist']
   Re_arcsec = rst['Re_arcsec']
-  size = (sol[:,1].max()/Re_arcsec*3.0).clip(5,None)
+  size = (sol[:,1].max()/Re_arcsec*3.0).clip(5, None)
   Re_kpc = Re_arcsec * dist * np.pi / 0.648 * 1e-3
   revised_gravconstant = gravconstant * msun * tenmegayear * tenmegayear / (pc_km * pc_km * pc_km * 1e18 * Re_kpc * Re_kpc * Re_kpc)
   # model parameters
-  os.system('update_model.py {} -t{} -s{} -i{} -uyes'.format(mname,duration,size,inc_deg))
-  os.system('define_M2M_particles.py {} -n{} -pfrom_elz -vfrom_elz -fP{}_{:.3f}'.format(mname,n_part,mname,ml))
-  os.system('update_lm.py {} -m{:.3f} -nMGE -fMGE{}'.format(mname, ml, mname))
-  os.system('update_grav_constant.py {} -g{:e}'.format(mname, revised_gravconstant))
-  os.system('update_orbit_int.py {} -t{:f}'.format(mname, integration_time_step))
-  os.system('update_weight_adapt.py {} -e{:f} -p"(0,-1)"'.format(mname,epsilon))
-  os.system('update_potential.py {}'.format(mname))
+  os.system('update_model.py {} -t{} -s{} -i{} -uyes'
+            .format(mname,duration,size,inc_deg))
+  os.system('define_M2M_particles.py {} -n{} -pfrom_elz -vfrom_elz -fP{}_{:.3f}'
+            .format(mname,n_part,mname,ml))
+  os.system('update_lm.py {} -m{:.3f} -nMGE -fMGE{}'
+            .format(mname, ml, mname))
+  os.system('update_grav_constant.py {} -g{:e}'
+            .format(mname, revised_gravconstant))
+  os.system('update_orbit_int.py {} -t{:f}'
+            .format(mname, integration_time_step))
+  os.system('update_weight_adapt.py {} -e{:f} -p"(0,-1)"'
+            .format(mname,epsilon))
+  os.system('update_potential.py {}'
+            .format(mname))
   # bin scheme
-  os.system('define_M2M_scheme.py {} -nld -taxisym -i"(16,32)" -s"(3.0)" -f{}bins'.format(mname,mname))
-  os.system('define_M2M_scheme.py {} -nsb -tpolar -i"(16,16)" -s"(3.0)" -f{}bins'.format(mname,mname))
-  os.system('define_M2M_scheme.py {} -nIFU -ttree -f{}bins'.format(mname,mname))
+  os.system('define_M2M_scheme.py {} -nld -taxisym -i"(16,32)" -s"(3.0)" -f{}bins'
+            .format(mname, mname))
+  os.system('define_M2M_scheme.py {} -nsb -tpolar -i"(16,16)" -s"(3.0)" -f{}bins'
+            .format(mname, mname))
+  os.system('define_M2M_scheme.py {} -nIFU -ttree -f{}bins'
+            .format(mname, mname))
 
   os.system('define_M2M_observ.py {} -nld_data -tld -bld -cMaNGA -r"(0,-1,1e-6,1.0)" -f{}data'.format(mname,mname,mname))
   os.system('define_M2M_observ.py {} -nsb_data -tsb -bsb -cMaNGA -r"(0,-1,1e-6,1.0)" -f{}data'.format(mname,mname,mname))

@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 import numpy as np
 import os
-from manga_util import write_mge
-from manga_util import symmetrize_velfield
+from m2m_manga_utils import write_mge
+from m2m_manga_utils import symmetrize_velfield
 import util_config as uc
-from create_data_bin import create
+from m2m_data_bin_util import create
 import pyfits
 from optparse import OptionParser
 
@@ -22,8 +22,8 @@ if __name__ == '__main__':
     mname = options.mname
 
   lhy = create(mname, folder = gname)
-  with open('{}/auxiliary_data/information.dat'.format(gname),'r') as ff: 
-    ang = float(ff.readline()) 
+  with open('{}/auxiliary_data/information.dat'.format(gname),'r') as ff:
+    ang = float(ff.readline())
     eps = float(ff.readline())
     dist = float(ff.readline())
     Re_arcsec = float(ff.readline())
@@ -32,7 +32,7 @@ if __name__ == '__main__':
   data1 = hdulist[1].data
   data2 = hdulist[2].data
   x0 = data1['xbin']
-  y0 = data1['ybin']   
+  y0 = data1['ybin']
   tem_rebin_x = data2['rebin_x']
   tem_rebin_y = data2['rebin_y']
 
@@ -46,7 +46,7 @@ if __name__ == '__main__':
   ii = r < 3.0
   v0 = data1['v0']
   vel = v0 - v0[ii].mean()
-  # rotate the data until velocity have positive value for x < 0 
+  # rotate the data until velocity have positive value for x < 0
   iii = xbin < 0.0
   rotate = vel[iii].mean()
   if rotate < 0.0:
