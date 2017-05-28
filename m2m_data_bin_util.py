@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 '''
-v0.0 Create constraint data and bin scheme 
+v0.0 Create constraint data and bin scheme
 '''
 version='v0.0'
 import numpy as np
@@ -20,7 +20,7 @@ from time import time,localtime,strftime
 from scipy.spatial import ConvexHull
 from scipy.stats import uniform
 import pyfits
-from manga_util import symmetrize_velfield
+from m2m_manga_utils import symmetrize_velfield
 import cProfile
 import pstats
 
@@ -39,7 +39,7 @@ def mge3d(sol,R,z,inc_deg):
   cosinc = np.cos(inc_deg/180.0*np.pi)
   sininc = np.sin(inc_deg/180.0*np.pi)
   rst = np.zeros_like(R)
-  sigma = sol[:,1] 
+  sigma = sol[:,1]
   q_int = (sol[:,2]**2-cosinc**2)**0.5/sininc
   #rho0 = sol[:,0]*2.0*np.pi*(sigma)**2*sol[:,2]/((sigma)**3*(2*np.pi)**1.5*q_int)
   rho0 = sol[:,0]/((sigma)**3*(2*np.pi)**1.5*q_int)
@@ -76,7 +76,7 @@ class create:
     # restore .cfg file
     self.xmodel_name, self.xconfig = uc.get_config(folder+'/'+input_cfg, model_name)
     self.Constraints_section = self.xconfig.get(self.xmodel_name, 'Constraints')
-    
+
   def IFU(self,xbin,ybin,vel=None,vel_err=None,disp=None,disp_err=None,\
          h3=None, h3_err=None, h4=None, h4_err=None, good=None, Re=None,\
          dist=None, rebin_x=None, rebin_y=None, n_part=None, plot=False,\
@@ -98,7 +98,7 @@ class create:
 
     #unit conversion
     distance_mpc = dist
-    #as2Re = 
+    #as2Re =
     R_e_as = Re
     as_pc = np.pi / 0.648
     Re_kpc = R_e_as * distance_mpc * as_pc * 1e-3
@@ -110,13 +110,13 @@ class create:
     if rebin_x is not None:
       rebin_x /= R_e_as
       rebin_y /= R_e_as
-    
- 
+
+
     #create IFU bin hull
-    if rebin_x is not None:  
+    if rebin_x is not None:
       hull = ConvexHull(np.array([rebin_x,rebin_y]).T)
       x_hull = rebin_x[hull.vertices][::-vertexStep] # vertexStep != 1 means do not use all the vertices
-      y_hull = rebin_y[hull.vertices][::-vertexStep] # must be clockwise!      
+      y_hull = rebin_y[hull.vertices][::-vertexStep] # must be clockwise!
     else:
       print 'Error - rebined data position should be provided!'
       exit(0)
@@ -190,8 +190,8 @@ class create:
     i_in_convex = i_in_Rmin +  i_between_in
     hull_volume = i_in_convex.sum()/float(n_part) * (Rect_x_max-Rect_x_min)*(Rect_y_max-Rect_y_min)
     n_part = i_in_convex.sum()
-    x_part = x_part[i_in_convex] 
-    y_part = y_part[i_in_convex]  
+    x_part = x_part[i_in_convex]
+    y_part = y_part[i_in_convex]
     dist2 = np.zeros([n_part,len(xbin)])
 
     for i in range(len(xbin)):
@@ -224,7 +224,7 @@ class create:
       ax.set_ylabel('y/Re')
       fig.savefig('%s/%s/IFU_bins.png'%(self.folder,self.bin_folder),dpi=300)
       plt.close(fig)
-        
+
     # create IFU bin file
     bin_output_name='IFU_bfile1'
     with open('%s/%s/%s'%(self.folder,self.bin_folder,bin_output_name),'w') as ff:
@@ -244,7 +244,7 @@ class create:
       with open('%s/%s/%s'%(self.folder,self.obs_folder,vel_output_name),'w') as ff:
         for i in range(len(xbin)):
           print >>ff, '{0:4d}  {1:+e}  {2:+e}  {3}'.format(i, vel[i], vel_err[i], good[i])
-      
+
     if disp is not None:
       disp *= tenmegayear * 1e-3 / pc_km / Re_kpc
       disp_err *= tenmegayear * 1e-3 / pc_km / Re_kpc
@@ -264,7 +264,7 @@ class create:
         h3_err_new = symmetrize_velfield(xbin[goodbins],ybin[goodbins],h3_err[goodbins],sym=2)
         h3[goodbins] = h3_new
         h3_err[goodbins] = h3_err_new
-      h3_output_name = 'IFU_h3dfile1' 
+      h3_output_name = 'IFU_h3dfile1'
       with open('%s/%s/%s'%(self.folder,self.obs_folder,h3_output_name),'w') as ff:
         for i in range(len(xbin)):
           print >>ff, '{0:4d}  {1:+e}  {2:+e}  {3}'.format(i, h3[i], h3_err[i], good[i])
@@ -278,27 +278,27 @@ class create:
       h4_output_name = 'IFU_h4dfile1'
       with open('%s/%s/%s'%(self.folder,self.obs_folder,h4_output_name),'w') as ff:
         for i in range(len(xbin)):
-          print >>ff, '{0:4d}  {1:+e}  {2:+e}  {3}'.format(i, h4[i], h4_err[i], good[i])      
+          print >>ff, '{0:4d}  {1:+e}  {2:+e}  {3}'.format(i, h4[i], h4_err[i], good[i])
 
   def luminosity_density(self,sol,inc_deg):
-    scheme_type      = self.xconfig.get('sec:ld', 'scheme_type')   
+    scheme_type      = self.xconfig.get('sec:ld', 'scheme_type')
     radial_interval  = self.xconfig.get('sec:ld', 'radial_interval')
     log_base         = self.xconfig.getfloat('sec:ld', 'log_base') if radial_interval == 'log' else 0.0
-    num_intervals    = self.xconfig.get('sec:ld', 'num_intervals')    
+    num_intervals    = self.xconfig.get('sec:ld', 'num_intervals')
     scheme_size      = self.xconfig.get('sec:ld', 'size')
-    
-    # split up num_intervals and scheme size 
+
+    # split up num_intervals and scheme size
 
     xintervals = uc.separate_values(num_intervals)
 
     num_coord1 = int(xintervals[0])  # r
     num_coord2 = int(xintervals[1])  # theta
-    
+
     num_edges_coord1 = num_coord1 + 1
     num_edges_coord2 = num_coord2 + 1
 
     xsize = uc.separate_values(scheme_size)
-    
+
     min_coord1 = 0.0
     max_coord1 = float(xsize[0])  # r
     min_coord2 = -0.5 * np.pi
@@ -307,12 +307,12 @@ class create:
     # create binning scheme edge values
 
     edges_coord2 = np.linspace(min_coord2, max_coord2, num_edges_coord2)
-    
+
     edges_coord1 = np.zeros(num_edges_coord1)
     if radial_interval == 'Sellwood_2003':
       edges_coord1[0] = 0.0
       for i in xrange(1, num_edges_coord1):
-        edges_coord1[i] = pow(max_coord1 + 1.0, float(i)/float(num_coord1)) - 1.0 
+        edges_coord1[i] = pow(max_coord1 + 1.0, float(i)/float(num_coord1)) - 1.0
     elif radial_interval == 'log':
       edges_coord1[0] = 0.0
       pn = 1.0
@@ -321,23 +321,23 @@ class create:
         pn *= log_base
     else:
       edges_coord1 = np.linspace(0.0, max_coord1, num_edges_coord1)
-        
+
     #print 'edges_coord1', self.edges_coord1
     #print 'edges_coord2', self.edges_coord2
-        
+
     # construct the bin R and z values
-    
+
     num_bins = num_coord1 * num_coord2
-    
+
     bin_R = np.zeros(num_bins)
     bin_z = np.zeros(num_bins)
-    
+
     for i in xrange(num_coord1):
       r = 0.5 * (edges_coord1[i] + edges_coord1[i+1])
-        
+
       for j in xrange(num_coord2):
         theta = 0.5 * (edges_coord2[j] + edges_coord2[j+1])
-                            
+
         bin_index = i * num_coord2 + j
         bin_R[bin_index] = r * np.cos(theta)
         bin_z[bin_index] = r * np.sin(theta)
@@ -348,7 +348,7 @@ class create:
       for j in xrange(num_coord2):
         bin_index = i * num_coord2 + j
         volume[bin_index] = (np.sin(edges_coord2[j+1]) - np.sin(edges_coord2[j])) * \
-                      (edges_coord1[i+1]**3 - edges_coord1[i]**3) * 2.0 * np.pi / 3.0  
+                      (edges_coord1[i+1]**3 - edges_coord1[i]**3) * 2.0 * np.pi / 3.0
 
     #calculate bin value
     bin_value = mge3d(sol, bin_R, bin_z, inc_deg)
@@ -382,13 +382,13 @@ class create:
     min_coord1 = 0.0
     max_coord1 = float(xsize[0])
     min_coord2 = 0.0
-    max_coord2 = 2 * np.pi   
+    max_coord2 = 2 * np.pi
     edges_coord2 = np.linspace(0.0, max_coord2, num_edges_coord2)
     edges_coord1 = np.zeros(num_edges_coord1)
     if radial_interval == 'Sellwood_2003':
       edges_coord1[0] = 0.0
       for i in xrange(1, num_edges_coord1):
-        edges_coord1[i] = pow(max_coord1 + 1.0, float(i)/float(num_coord1)) - 1.0 
+        edges_coord1[i] = pow(max_coord1 + 1.0, float(i)/float(num_coord1)) - 1.0
     elif radial_interval == 'log':
       edges_coord1[0] = 0.0
       pn = 1.0
@@ -398,11 +398,11 @@ class create:
     else:
       edges_coord1 = np.linspace(0.0, max_coord1, num_edges_coord1)
 
-    #calculate bin position 
+    #calculate bin position
     num_bins = num_coord1 * num_coord2
     bin_X = np.zeros(num_bins)
     bin_Y = np.zeros(num_bins)
-   
+
     for i in xrange(num_coord1):
       R = 0.5 * (edges_coord1[i] + edges_coord1[i+1])
       for j in xrange(num_coord2):
@@ -417,7 +417,7 @@ class create:
       for j in xrange(num_coord2):
         bin_index = i * num_coord2 + j
         area[bin_index] = 0.5 * (edges_coord2[j+1] - edges_coord2[j]) * (edges_coord1[i+1]**2 - edges_coord1[i]**2)
-    
+
     #calculate bin value
     bin_value = mge(sol, bin_X, bin_Y)
     good = np.ones_like(bin_value,dtype=int)
@@ -427,7 +427,7 @@ class create:
     #Z = mge(sol, X, Y)
     #plt.imshow(np.log10(Z))
     #plt.show()
-    
+
     # write data to the data file and bin file
     sb_output_name = 'sb_datadfile1'
     bin_output_name = 'sb_bfile1'
@@ -445,7 +445,7 @@ class create:
       good = np.ones(len(value), dtype=int)
     with open('%s/%s/%s'%(self.folder,self.obs_folder,line_output_name),'w') as ff:
       for i in range(len(value)):
-        print >>ff, '{0:4d}  {1:+e}  {2:+e}  {3}'.format(i, value[i], error[i], good[i])    
+        print >>ff, '{0:4d}  {1:+e}  {2:+e}  {3}'.format(i, value[i], error[i], good[i])
 
   def discrete_data(self):
     pass

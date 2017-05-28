@@ -27,6 +27,9 @@ if __name__=='__main__':
                     default=None, help='model name')
   (options, args) = parser.parse_args()
   gname = options.gname
+  if options.gname is None:
+      print 'Please provide a galaxy name'
+      exit()
   if options.mname is None:
     mname = gname
   else:
