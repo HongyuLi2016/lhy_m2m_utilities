@@ -36,7 +36,7 @@ if __name__=='__main__':
     mname = options.mname
   os.chdir('{}/{}'.format(cdir,gname))
   os.system('define_M2M_model.py {}'.format(mname))
-  zz = pyfits.open('auxiliary_data/information.fits')[1].data['redshift'][0]
+  # zz = pyfits.open('auxiliary_data/information.fits')[1].data['redshift'][0]
   with open('auxiliary_data/JAM_pars.dat') as f:
       rst = pickle.load(f)
   sol = rst['lum2d']
