@@ -125,7 +125,7 @@ class M2Mrst:
 
         # read spectral line results
         nobs_spec = self.xconfig.getint('sec:Spectral_lines', 'num_obs')
-        list_spec = [self.xconfig.get('sec:sec:Spectral_lines',
+        list_spec = [self.xconfig.get('sec:Spectral_lines',
                                       'obsx{}'.format(i)).split(':')[1]
                      for i in range(nobs_spec)]
         self.spec_data = {}

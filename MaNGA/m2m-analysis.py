@@ -34,6 +34,7 @@ os.system('mkdir -p {}/rst_{}/analysis'.format(args[0], model))
 modelRst = au.M2Mrst(args[0], model)
 vel = modelRst.kin_data['IFU_vel']
 disp = modelRst.kin_data['IFU_disp']
+Z = modelRst.spec_data['IFU_Z']
 scale = modelRst.vel2kms
 
 fig, axes = au.plot_map(vel['xbin'], vel['ybin'], vel['obs']*scale,
@@ -45,3 +46,9 @@ fig, axes = au.plot_map(disp['xbin'], disp['ybin'], disp['obs']**0.5*scale,
                         disp['model']**0.5*scale, goodbins=disp['inUse'],
                         title='Dispersion')
 fig.savefig('{}/rst_{}/analysis/disp.png'.format(args[0], model), dpi=150)
+
+
+fig, axes = au.plot_map(Z['xbin'], Z['ybin'], Z['obs'],
+                        Z['model']**0.5*scale, goodbins=Z['inUse'],
+                        title='Z')
+fig.savefig('{}/rst_{}/analysis/Z.png'.format(args[0], model), dpi=150)

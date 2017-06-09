@@ -13,12 +13,10 @@ from optparse import OptionParser
 import os
 import sys
 import util_runtime as rt
-import util_config as uc
 from scipy.stats import uniform
 from scipy.optimize import minimize,brentq
 from time import time,localtime,strftime
 from scipy.spatial import ConvexHull
-from scipy.stats import uniform
 import pyfits
 from m2m_manga_utils import symmetrize_velfield
 import cProfile
@@ -439,10 +437,19 @@ class create:
         print >>ff, '{0:4d}  {1:+e} {2}'.format(i,area[i],good[i])
 
 
-  def specline(self,line_name,value,error,good=None):
-    line_output_name = '%sdfile1'%line_name
+  def specline(self, line_name, xbin, ybin, value, error,
+               good=None, symmetrize=True):
+    line_output_name = '%sdfile1' % line_name
     if good is None:
       good = np.ones(len(value), dtype=int)
+    goodbins = good ==1
+    if symmetrize:
+      value_new = symmetrize_velfield(xbin[goodbins], ybin[goodbins],
+                                      value[goodbins], sym=2)
+      error_new = symmetrize_velfield(xbin[goodbins], ybin[goodbins],
+                                      error[goodbins], sym=2)
+      value[goodbins] = value_new
+      error[goodbins] = error_new
     with open('%s/%s/%s'%(self.folder,self.obs_folder,line_output_name),'w') as ff:
       for i in range(len(value)):
         print >>ff, '{0:4d}  {1:+e}  {2:+e}  {3}'.format(i, value[i], error[i], good[i])

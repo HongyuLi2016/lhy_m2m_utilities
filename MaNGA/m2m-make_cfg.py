@@ -50,7 +50,7 @@ if __name__=='__main__':
   # model parameters
   os.system('update_model.py {} -t{} -s{} -i{} -uyes'
             .format(mname,duration,size,inc_deg))
-  os.system('define_M2M_particles.py {} -n{} -pfrom_elz -vfrom_elz -fP{}_{:.3f}'
+  os.system('define_M2M_particles.py {} -n{} -pELzI3 -vELzI3 -fP{}_{:.3f}'
             .format(mname,n_part,mname,ml))
   os.system('update_lm.py {} -m{:.3f} -nMGE -fMGE{}'
             .format(mname, ml, mname))
@@ -74,6 +74,7 @@ if __name__=='__main__':
   os.system('define_M2M_observ.py {} -nsb_data -tsb -bsb -cMaNGA -r"(0,-1,1e-6,1.0)" -f{}data'.format(mname,mname,mname))
   os.system('define_M2M_observ.py {} -nIFU_vel  -tlosvelocity -bIFU -cMaNGA -r"(0,-1,1e-6,1.0)" -f{}data'.format(mname,mname))
   os.system('define_M2M_observ.py {} -nIFU_disp -tlosveldisp  -bIFU -cMaNGA -r"(0,-1,1e-6,1.0)" -f{}data'.format(mname,mname))
+  os.system('define_M2M_observ.py {} -nIFU_Z -tspecline  -bIFU -cMaNGA -r"(0,-1,1e-6,1.0)" -f{}data'.format(mname,mname))
   os.system('update_observ.py {} -nld_data -uno -r"(0,-1,2e-3,1.0)"'.format(mname))
   os.system('update_observ.py {} -nsb_data -uno -r"(0,-1,2e-3,1.0)"'.format(mname))
   os.system('update_observ.py {} -nIFU_vel -uno -r"(0,-1,2e-3,1.0)"'.format(mname))

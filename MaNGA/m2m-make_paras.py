@@ -20,6 +20,8 @@ class make_paras:
         self.size = self.xconfig.getfloat('sec:Model', 'size')
         self.inc_deg = self.xconfig.getfloat('sec:Model', 'inclination')
         self.G = self.xconfig.getfloat('sec:Potential', 'grav_constant')
+        self.ml = self.xconfig.getfloat('sec:rt_Luminous_matter',
+                                        'mass_to_light')
         self.interp_folder = self.xconfig.get(
             'sec:rt_Luminous_matter', 'interp_folder')
         mge = np.load('{}/auxiliary_data/mge.npy'.format(gname))
@@ -38,14 +40,13 @@ class make_paras:
             (self.sol[:, 1] * pc)**2 * self.sol[:, 2] / 1e10
         self.sol[:, 1] /= self.Re_arcsec
         self.pot[:, 0] = 2.0 * np.pi * self.pot[:, 0] * \
-            (self.pot[:, 1] * pc)**2 * self.pot[:, 2] / 1e10
+            (self.pot[:, 1] * pc)**2 * self.pot[:, 2] / 1e10 / self.ml
         self.pot[:, 1] /= self.Re_arcsec
         self.L_tot = np.sum(self.sol[:, 0])
         os.system('mkdir -p {}/{}'.format(gname, self.interp_folder))
         write_pymge(self.sol, fname='m2m_mge_lum'.format(self.model),
                     outpath='{}/{}'.format(gname, self.interp_folder))
-        write_pymge(self.pot[self.sol.shape[0]:, :],
-                    fname='m2m_mge_dm'.format(self.model),
+        write_pymge(self.pot, fname='m2m_mge_dm'.format(self.model),
                     outpath='{}/{}'.format(gname, self.interp_folder))
         if information:
             with open('{}/auxiliary_data/information.dat'

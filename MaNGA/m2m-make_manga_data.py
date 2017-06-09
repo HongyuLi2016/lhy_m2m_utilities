@@ -42,8 +42,8 @@ if __name__ == '__main__':
     tem_rebin_y = data2['rebin_y']
 
     pa = np.radians(ang - 90.0)
-    xbin = np.cos(pa)*x0-np.sin(pa)*y0
-    ybin = np.sin(pa)*x0+np.cos(pa)*y0
+    xbin = np.cos(pa)*x0-np.sin(pa)*y0 + 1e-6
+    ybin = np.sin(pa)*x0+np.cos(pa)*y0 - 1e-6
     rebin_x = np.cos(pa) * tem_rebin_x - np.sin(pa) * tem_rebin_y
     rebin_y = np.sin(pa) * tem_rebin_x + np.cos(pa) * tem_rebin_y
 
@@ -64,6 +64,8 @@ if __name__ == '__main__':
     # v0_err = np.zeros_like(vel) + 15.0
     vd = data1['vd']
     vd_err = data1['vd_err'].clip(10.0, 200.0)
+    IFU_Z = data1['metal']
+    IFU_Z_err = IFU_Z * 0.05
     # vd_err = (vd.copy() * 0.05).clip(6.0)
     # h3 = data1['h3']
     # h3_err = data1['h3_err']
@@ -88,3 +90,4 @@ if __name__ == '__main__':
             rebin_x=rebin_x, rebin_y=rebin_y,
             dist=dist, n_part=300000, plot=False, Re=Re_arcsec, good=goodbins,
             symmetrize=options.symmetrize, vertexStep=1)
+    lhy.specline('IFU_Z', xbin, ybin, IFU_Z, IFU_Z_err)
