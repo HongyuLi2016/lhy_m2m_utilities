@@ -6,8 +6,9 @@ m2m-make_manga_data.py -g $1 -m $2
 cd $1
 
 create_mge_tables.py $2 -p MGE$2 > MGE$2/stdmge
+create_ics.py $2 -c > stdics$2 
+mv stdics$2 P$2*/
 
-cd ..
-
-#m2m-create_ics.py $2 -f $1 -l # use flat z
-m2m-create_ics.py $2 -f $1 # use logz
+# cd ..
+# m2m-create_ics.py $2 -f $1 -l # use flat z
+# m2m-create_ics.py $2 -f $1 # use logz

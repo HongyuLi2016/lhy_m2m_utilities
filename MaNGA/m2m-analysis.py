@@ -49,6 +49,6 @@ fig.savefig('{}/rst_{}/analysis/disp.png'.format(args[0], model), dpi=150)
 
 
 fig, axes = au.plot_map(Z['xbin'], Z['ybin'], Z['obs'],
-                        Z['model']**0.5*scale, goodbins=Z['inUse'],
+                        Z['model'], goodbins=Z['inUse'],
                         title='Z')
 fig.savefig('{}/rst_{}/analysis/Z.png'.format(args[0], model), dpi=150)
